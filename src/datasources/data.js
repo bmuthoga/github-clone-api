@@ -23,8 +23,9 @@ class DataApi extends DataSource {
     return story;
   }
 
-  async getStories() {
+  async getStories({ boardId }) {
     const stories = await this.store.stories.findAll({
+      where: { boardId: boardId },
       include: [this.store.categories, this.store.statuses, this.store.boards],
     });
     return stories;
@@ -52,13 +53,6 @@ class DataApi extends DataSource {
     categoryId = 1,
     statusId = 1,
   }) {
-    const story = await this.store.stories.find({
-      where: { title },
-      include: [this.store.categories, this.store.statuses, this.store.boards],
-    });
-
-    if (story) return story;
-
     const newStory = await this.store.stories.create({
       title,
       description,
@@ -74,8 +68,18 @@ class DataApi extends DataSource {
     return createdStory;
   }
 
-  async updateStory({ storyId, title, description, categoryId, statusId }) {
-    const story = await this.store.stories.findById(storyId, {
+  async updateBoard({ id, name }) {
+    const board = await this.store.boards.findById(id);
+
+    if (!board) return null;
+
+    board.name = name || board.name;
+    await board.save();
+    return board;
+  }
+
+  async updateStory({ id, title, description, categoryId, statusId }) {
+    const story = await this.store.stories.findById(id, {
       include: [this.store.categories, this.store.statuses, this.store.boards],
     });
 
@@ -89,8 +93,8 @@ class DataApi extends DataSource {
     return story;
   }
 
-  async deleteStory({ storyId }) {
-    const story = await this.store.stories.findById(storyId, {
+  async deleteStory({ id }) {
+    const story = await this.store.stories.findById(id, {
       include: [this.store.categories, this.store.statuses, this.store.boards],
     });
 

@@ -4,7 +4,7 @@ const typeDefs = gql`
   type Query {
     boards: [Board]!
     board(id: ID!): Board
-    stories: [Story]!
+    stories(boardId: ID!): [Story]!
     story(id: ID!): Story
     categories: [Category]!
     statuses: [Status]!
@@ -19,14 +19,15 @@ const typeDefs = gql`
       categoryId: ID
       statusId: ID
     ): Story
+    updateBoard(id: ID!, name: String): Board
     updateStory(
-      storyId: ID!
+      id: ID!
       title: String
       description: String
       categoryId: ID
       statusId: ID
     ): Story
-    deleteStory(storyId: ID!): Story
+    deleteStory(id: ID!): Story
   }
 
   type Board {
